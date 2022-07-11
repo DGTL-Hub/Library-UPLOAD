@@ -14,11 +14,16 @@ function getBooksBorrowedCount(books) {
 ////compairng arrays and returning data...///
 ////////////////////////////////////////////
 
+
+/* This code is mapping over the books array and returning an array of genre objects.The map function iterates through each book in the books array, which contains a property called genre.It then pushes that value into an empty object with a name property equal to the current book's genre and count property equal to 1.
+ */
+
 function getMostCommonGenres(books) {
-  const bookGenres = books.map((book) => book.genre);
+  const totalBookCount = getTotalBooksCount 
+  const bookGenres = books.map((book) => book.genre);  //map over the books array and return an array of genre values
   const acc = [];
   //map over book genres
-  bookGenres.map((genre) => {
+  bookGenres.map((genre) => { 
     //for each genre, first check to see if genre already exists in array
     const genreLocation = acc.findIndex((element) => element.name === genre);
     //second, if it exists, increase count by 1
@@ -36,7 +41,11 @@ function getMostCommonGenres(books) {
   if (acc.length > 5) {
     return acc.slice(0, 5);
   }
-  return acc;
+  if (acc.length <= totalBookCount){
+   return acc;
+  }else{
+return null;
+  }
 }
 
 /////////////////////////////////////////////////////
