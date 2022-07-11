@@ -1,41 +1,36 @@
-///////////////////////////////////////
-/////Find Method param function///////
 /////////////////////////////////////
+/////Find Method param function/////
+///////////////////////////////////
+
 function findAuthorById(authors, id) {
   return authors.find((author) => author.id === id);
 }
 
-/////////////////////////////////////
-//////find Method param function////
-///////////////////////////////////
-function findBookById(books, id) {
-  return books.find((book) => book.id === id);
-}
-/////////////////////////////////////////////////
-////////////////////////////////////////////////
-function partitionBooksByBorrowedStatus(books) {
-  let available = [];
-  let unavailable = [];
-  const bookStatuses = [];
-  books.forEach((book) => {
-    const isBookReturned = book.borrows[0].returned;
 
-    if (isBookReturned) {
-      // if book is not returned
-      unavailable.push(book);
-    } else {
-      // if book is returned
-      available.push(book);
-    }
-  });
-  bookStatuses.push(available);
-  bookStatuses.push(unavailable);
-  return bookStatuses;
-}
+////////////////////////////////////
+//////find Method param function///
+//////////////////////////////////
 
-/////////////////////////////////////////
-////////////////////////////////////////
-///////////////////////////////////////
+const findBookById = (books, id) => books.find((book) => book.id === id);
+
+
+//////////////////////////////////////////////////////////////////////////////
+// This code simply is filtering out books that are not borrowed or returned.
+////////////////////////////////////////////////////////////////////////////
+
+function partitionBooksByBorrowedStatus(books) {  
+  const borrowed = books.filter((book) => book.borrows.some((borrow) => !borrow.returned));  //filter out books not borrowed.
+  const returned = books.filter((book) => book.borrows.every((borrow) => borrow.returned)); //filter out books not returned.
+  const bookStatuses = [[...borrowed], [...returned]];    //spread opporator to combine arrays that been filterd out by status.
+  return bookStatuses};       
+
+
+////////////////////////////////////
+/* This code is getting the borrowers for a book.It's finding all of the transactions that are associated with this book, and then it's sorting them by company name.Then it's returning only 10 results (the top 10 companies).
+ */
+////////////////////////////////////
+////////////////////////////////////
+
 function getBorrowersForBook(book, accounts) {
   // `borrows` is a list of transactions, each of type { id: string, returned: true }
   const {
@@ -46,18 +41,16 @@ function getBorrowersForBook(book, accounts) {
     id,
     returned
   }) => {
-    // find account that matches the borrower's ID
+    //find account that matches the borrower's ID//
     const account = accounts.find((account) => account.id === id);
 
-    // return the matching account, along with the `returned` info
+    // return the matching account, along with the `returned` info//
     return {
       ...account,
       returned,
     };
   });
-  ///////////////////////////////////////////
-  //////////////////////////////////////////
-  /////////////////////////////////////////
+
   return borrowers
     .sort((borrowerA, borrowerB) => {
       const companyA = borrowerA.company;
@@ -67,6 +60,7 @@ function getBorrowersForBook(book, accounts) {
     .slice(0, 10);
 }
 
+//---------------------------------------------------------------------------------------------------------------------//
 module.exports = {
   findAuthorById,
   findBookById,

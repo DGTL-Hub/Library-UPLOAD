@@ -1,53 +1,49 @@
-//////////////////////////////////////////////////////
-//////////GETTING LENGTH OF BOOKs ARRAY///////////////
-//////////////////////////////////////////////////////
-function getTotalBooksCount(books) {
-  return books.length;
-}
-////////////////////////////////////////////////
-//////////GETTING ACCOUNT OBJs/////////////////
 //////////////////////////////////////////////
-function getTotalAccountsCount(accounts) {
-  return accounts.length;
-}
-////////////////////////////////////////////////
-//////////Filtering out Brrowed Books//////////
+//////////GETTING LENGTH OF BOOKs ARRAY/////
+const getTotalBooksCount = books => books.length;
 //////////////////////////////////////////////
+//////////GETTING ACCOUNT OBJs/////////////
+const getTotalAccountsCount = accounts => accounts.length;
+/////////////////////////////////////////////
+//////////Filtering out Brrowed Books///////
 function getBooksBorrowedCount(books) {
-  return books.filter((book) =>
-    book.borrows.find((borrow) => borrow.returned === false)
-  ).length;
+  return books.filter((book) => book.borrows.find((borrow) => borrow.returned === false)).length;
 }
-/////////////////////////////////////////////////////
-//////////compairng arrays and returning data.../////
-/////////////////////////////////////////////////////
+
+//////////////////////////////////////////////
+////compairng arrays and returning data...///
+////////////////////////////////////////////
+
 function getMostCommonGenres(books) {
   const bookGenres = books.map((book) => book.genre);
-  const temp = [];
+  const acc = [];
   //map over book genres
   bookGenres.map((genre) => {
     //for each genre, first check to see if genre already exists in array
-    const genreLocation = temp.findIndex((element) => element.name === genre);
+    const genreLocation = acc.findIndex((element) => element.name === genre);
     //second, if it exists, increase count by 1
     if (genreLocation >= 0) {
-      temp[genreLocation].count = temp[genreLocation].count + 1;
+      acc[genreLocation].count = acc[genreLocation].count + 1;
       //else, if it don't exist, push a new genre object onto array with count of 1
     } else {
-      temp.push({
+      acc.push({
         name: genre,
         count: 1,
       });
     }
   });
-  temp.sort((a, b) => b.count - a.count);
-  if (temp.length > 5) {
-    return temp.slice(0, 5);
+  acc.sort((genresA, genresB) => genresB.count - genresA.count);
+  if (acc.length > 5) {
+    return acc.slice(0, 5);
   }
-  return temp;
+  return acc;
 }
+
 /////////////////////////////////////////////////////
-////////MAP & SORT//////////////////////////////////
+////////MAP & SORT//////////Not sure if this works..
 ///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+
 // function getMostPopularBooks(books) {
 // const popularBooks = books.map(book => {
 //     return { name: book.title, count: book.borrows.length }   //returns an object with the book title and # of borrows
@@ -55,10 +51,14 @@ function getMostCommonGenres(books) {
 //   popularBooks.sort((bookA, bookB) => bookB.count - bookA.count).splice(5)
 //   return popularBooks;
 // }
-
 /////////////////////////////////////////////////////
-////////////////////////////////////////////////////
-///////////////////////////////////////////////////
+/* This code is returning an object with the book title and # of borrows.
+The map function iterates through each element in the array, creating a new object for each element.
+The sort function sorts the objects by their count property(the number of times they were borrowed).
+It then returns only 5 elements from that sorted list. */
+/////Vvvv///////////////////////////////////vvvV///
+//////////////////////////////////////////////////
+
 function getMostPopularBooks(books) {
   //  returns an object with the book title and # of borrows
   const popBooks = books.map((book) => ({
@@ -67,21 +67,24 @@ function getMostPopularBooks(books) {
   }));
   return popBooks.sort((bookA, bookB) => bookB.count - bookA.count).slice(0, 5);
 }
-//////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+////////////////|/////////////////////|///////////////
+///////////////!Vvv!CODE WITH BUGS!vvvV!/////////////////
+/////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 
-function getMostPopularAuthors(books, authors) {
+/* function getMostPopularAuthors(books, authors) {
   const topAuthors = authors
-    .map((a) => ({
-      ...a,
+    .map((popAuthor) => ({
+      ...popAuthor,
       // books: books.filter(b => b.authorId === a.id),
-      bookCount: books.filter((b) => b.authorId === a.id).length,
+      bookCount: books.filter((b) => b.authorId === popAuthor.id).length,
       borrowCount: books
-        .filter((b) => b.authorId === a.id)
+        .filter((b) => b.authorId === popAuthor.id)
         .reduce((acc, cur) => acc + cur.borrows.length, 0),
     }))
-    .sort((b, a) => a.borrowCount - b.borrowCount);
+    .sort((b, popAuthor) => popAuthor.borrowCount - b.borrowCount);
   topAuthors.length = 5;
   return topAuthors.map((ta) => {
     return {
@@ -89,7 +92,7 @@ function getMostPopularAuthors(books, authors) {
       name: ta.name.first + " " + ta.name.last,
     };
   });
-}
+} */
 
 /* function getMostPopularAuthor(books,authors){
   const result =[]; //create an empty array to hold the results
@@ -113,8 +116,36 @@ function getMostPopularAuthors(books, authors) {
     const authoredBooks = book.filter(book => book.authorId ===author.id);
     const borrows = authoredBooks.reduce((acc,book) => acc + book.borrows.length, 0);
     const author = { name: author.name.first + " " + author.name.last, count: borrows };)
- }
- */
+ } */
+//////////////////////////////////////////////////////
+///////////////^^^^^CODE WITH BUGS^^^^^^/////////////
+///////////////||///////////////////||//////////////
+//-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+////////////////...MAP.FILTER.FILTER.FILTER.${Oobjectified$}/////RETURN...//////////////////////////////
+//////////////////////////////////////////////////////
+/* This code is mapping over the authors array and creating a new object for each author.The new object has two properties, bookCount and borrowCount.
+bookCount is equal to the number of books that have an authorId matching the current author's id in the authors array.
+borrowCount is equal to all of those books' borrows added together (reduced). */
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+function getMostPopularAuthors(books, authors) {
+  const topAuthors = authors.map(aAuthor => ({ ...aAuthor,
+    bookCount: books.filter(zAuthor => zAuthor.authorId === aAuthor.id).length,
+    borrowCount: books.filter(zAuthor => zAuthor.authorId === aAuthor.id).reduce((acc, cur) => acc + cur.borrows.length, 0)
+  })).sort((zAuthor, aAuthor) => aAuthor.borrowCount - zAuthor.borrowCount); 
+  // console.log(topAuthors);
+  topAuthors.length = 5;
+      
+  return topAuthors.map(ta => {
+  return { 
+    count: ta.borrowCount, 
+    name: ta.name.first + " " + ta.name.last 
+    };
+  })
+}
+
+//-------------------------------------------------------------------------------------------------------------------//
 module.exports = {
   getTotalBooksCount,
   getTotalAccountsCount,
